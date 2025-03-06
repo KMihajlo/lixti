@@ -43,6 +43,14 @@ public class BookService {
     }
 
     public BookResponse updateBook(BookRequest bookRequest, String id) {
+        return updateBook(bookRequest, id, false);
+    }
+
+    public BookResponse partiallyUpdateBook(BookRequest bookRequest, String id) {
+        return updateBook(bookRequest, id, true);
+    }
+
+    private BookResponse updateBook(BookRequest bookRequest, String id, boolean partialUpdate) {
         if (bookRequest == null || StringUtils.isBlank(id)) {
             log.error("Book object is null or id is empty");
             throw new BookApiBadRequestException("Book object is null or id is empty",
@@ -56,14 +64,23 @@ public class BookService {
         }
 
         BookModel bookModel = bookModelOptional.get();
-        bookModel.setIsbn(bookRequest.getIsbn());
-        bookModel.setTitle(bookRequest.getTitle());
-        bookModel.setAuthor(bookRequest.getAuthor());
-        bookModel.setPublisher(bookRequest.getPublisher());
-        bookModel.setPublishedDate(bookRequest.getPublishedDate());
-        bookModel.setPages(bookRequest.getPages());
-        bookModel.setType(bookRequest.getType());
-
+        if (partialUpdate) {
+            bookModel.setIsbn(StringUtils.isNotBlank(bookRequest.getIsbn()) ? bookRequest.getIsbn() : bookModel.getIsbn());
+            bookModel.setTitle(StringUtils.isNotBlank(bookRequest.getTitle()) ? bookRequest.getTitle() : bookModel.getTitle());
+            bookModel.setAuthor(StringUtils.isNotBlank(bookRequest.getAuthor()) ? bookRequest.getAuthor() : bookModel.getAuthor());
+            bookModel.setPublisher(StringUtils.isNotBlank(bookRequest.getPublisher()) ? bookRequest.getPublisher() : bookModel.getPublisher());
+            bookModel.setPublishedDate(StringUtils.isNotBlank(bookRequest.getPublishedDate()) ? bookRequest.getPublishedDate() : bookModel.getPublishedDate());
+            bookModel.setPages(bookRequest.getPages() != 0 ? bookRequest.getPages() : bookModel.getPages());
+            bookModel.setType(StringUtils.isNotBlank(bookRequest.getType().getValue()) ? bookRequest.getType() : bookModel.getType());
+        } else {
+            bookModel.setIsbn(bookRequest.getIsbn());
+            bookModel.setTitle(bookRequest.getTitle());
+            bookModel.setAuthor(bookRequest.getAuthor());
+            bookModel.setPublisher(bookRequest.getPublisher());
+            bookModel.setPublishedDate(bookRequest.getPublishedDate());
+            bookModel.setPages(bookRequest.getPages());
+            bookModel.setType(bookRequest.getType());
+        }
 
         BookResponse bookResponse = save(bookModel);
         log.info("Book resource updated: {}", bookResponse);
