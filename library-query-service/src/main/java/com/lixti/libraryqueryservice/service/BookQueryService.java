@@ -28,6 +28,31 @@ public class BookQueryService {
         return bookResponses;
     }
 
+    public BookResponse getBookById(String id) {
+        BookQueryModel bookQueryModel = bookQueryRepository.findById(id)
+                                                           .orElse(null);
+
+        if(bookQueryModel == null) {
+            return null;
+        }
+
+        log.info(bookQueryModel.toString());
+        return mapToBookResponse(bookQueryModel);
+    }
+
+    public BookQueryModel mapToBookQueryModel(BookResponse bookResponse) {
+        return BookQueryModel.builder()
+                             .id(bookResponse.getId())
+                             .isbn(bookResponse.getIsbn())
+                             .title(bookResponse.getTitle())
+                             .author(bookResponse.getAuthor())
+                             .publisher(bookResponse.getPublisher())
+                             .publishedDate(bookResponse.getPublishedDate())
+                             .pages(bookResponse.getPages())
+                             .type(bookResponse.getType())
+                             .build();
+    }
+
     private BookResponse mapToBookResponse(BookQueryModel bookQueryModel) {
         return BookResponse.builder()
                            .id(bookQueryModel.getId())

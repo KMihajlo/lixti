@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class BookModel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private String id;
 
     private String isbn;

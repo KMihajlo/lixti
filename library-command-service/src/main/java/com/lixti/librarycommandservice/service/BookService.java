@@ -20,6 +20,7 @@ import java.util.Optional;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final KafkaProducerService kafkaProducerService;
 
     public BookResponse createBook(BookRequest bookRequest) {
         if (bookRequest == null) {
@@ -36,8 +37,9 @@ public class BookService {
                                        .type(bookRequest.getType())
                                        .build();
 
-
         BookResponse bookResponse = save(bookModel);
+        kafkaProducerService.sendKafkaEvent(bookResponse, "CreateBook");
+
         log.info("Book created: {}", bookResponse);
         return bookResponse;
     }
@@ -83,6 +85,12 @@ public class BookService {
         }
 
         BookResponse bookResponse = save(bookModel);
+        if (partialUpdate) {
+            kafkaProducerService.sendKafkaEvent(bookResponse, "PartialUpdateBook");
+        } else {
+            kafkaProducerService.sendKafkaEvent(bookResponse, "UpdateBook");
+        }
+
         log.info("Book resource updated: {}", bookResponse);
         return bookResponse;
     }

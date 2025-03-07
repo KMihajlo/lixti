@@ -13,7 +13,6 @@ import lombok.*;
 public class BookQueryModel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     private String isbn;

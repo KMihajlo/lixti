@@ -3,10 +3,10 @@ package com.lixti.libraryqueryservice.dto;
 import com.lixti.libraryqueryservice.enums.BookType;
 import lombok.*;
 
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter @Getter
 public class BookResponse {
 
     private String id;
